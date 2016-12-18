@@ -1,6 +1,6 @@
 /*!
  * iCheck v1.0.2, http://git.io/arlzeA
- * ===================================
+ * ====================================================
  * Powerful jQuery and Zepto plugin for checkboxes and radio buttons customization
  *
  * (c) 2013 Damir Sultanov, http://fronteed.com
@@ -16,7 +16,7 @@
     _radio = 'radio',
     _checked = 'checked',
     _unchecked = 'un' + _checked,
-    _disabled = 'disabled',a
+    _disabled = 'disabled',
     _determinate = 'determinate',
     _indeterminate = 'in' + _determinate,
     _update = 'update',
@@ -60,7 +60,7 @@
       return stack.each(function() {
         var self = $(this);
 
-        if (options == 'destroy') {
+        if (options === 'destroy') {
           tidy(self, 'ifDestroyed');
         } else {
           operate(self, true, options);
@@ -73,7 +73,7 @@
       });
 
     // Customization
-    } else if (typeof options == 'object' || !options) {
+    } else if (typeof options === 'object' || !options) {
 
       // Check if any options were passed
       var settings = $.extend({
@@ -94,7 +94,7 @@
         area = ('' + settings.increaseArea).replace('%', '') | 0;
 
       // Selector limit
-      if (selector == _checkbox || selector == _radio) {
+      if (selector === _checkbox || selector === _radio) {
         handle = 'input[type="' + selector + '"]';
       }
 
@@ -142,7 +142,7 @@
           },
 
           // Get proper class
-          className = node[_type] == _checkbox ? settings.checkboxClass || 'i' + _checkbox : settings.radioClass || 'i' + _radio,
+          className = node[_type] === _checkbox ? settings.checkboxClass || 'i' + _checkbox : settings.radioClass || 'i' + _radio,
 
           // Find assigned labels
           label = $(_label + '[for="' + id + '"]').add(self.closest(_label)),
@@ -183,7 +183,7 @@
         self.data(_iCheck, {o: settings, s: self.attr('style')}).css(hide);
         !!settings.inheritClass && parent[_add](node.className || '');
         !!settings.inheritID && id && parent.attr('id', _iCheck + '-' + id);
-        parent.css('position') == 'static' && parent.css('position', 'relative');
+        parent.css('position') === 'static' && parent.css('position', 'relative');
         operate(self, true, _update);
 
         // Label events
@@ -196,7 +196,7 @@
             if (!node[_disabled]) {
 
               // Click
-              if (type == _click) {
+              if (type === _click) {
                 if ($(event.target).is('a')) {
                   return;
                 }
@@ -230,12 +230,12 @@
             key = event.keyCode;
 
           // Click
-          if (type == _click) {
+          if (type === _click) {
             return false;
 
           // Keydown
-          } else if (type == 'keydown' && key == 32) {
-            if (!(node[_type] == _radio && node[_checked])) {
+          } else if (type === 'keydown' && key === 32) {
+            if (!(node[_type] === _radio && node[_checked])) {
               if (node[_checked]) {
                 off(self, _checked);
               } else {
@@ -246,12 +246,12 @@
             return false;
 
           // Keyup
-          } else if (type == 'keyup' && node[_type] == _radio) {
+          } else if (type === 'keyup' && node[_type] === _radio) {
             !node[_checked] && on(self, _checked);
 
           // Focus/blur
           } else if (/us|ur/.test(type)) {
-            parent[type == 'blur' ? _remove : _add](focusClass);
+            parent[type === 'blur' ? _remove : _add](focusClass);
           }
         });
 
@@ -266,7 +266,7 @@
           if (!node[_disabled]) {
 
             // Click
-            if (type == _click) {
+            if (type === _click) {
               operate(self, false, true);
 
             // Active and hover states
@@ -284,7 +284,7 @@
               }
 
               // Label hover
-              if (label.length && labelHover && toggle == hoverClass) {
+              if (label.length && labelHover && toggle === hoverClass) {
 
                 // mouseout|touchend
                 label[/ut|nd/.test(type) ? _remove : _add](labelHoverClass);
@@ -308,10 +308,10 @@
   function operate(input, direct, method) {
     var node = input[0],
       state = /er/.test(method) ? _indeterminate : /bl/.test(method) ? _disabled : _checked,
-      active = method == _update ? {
+      active = method === _update ? {
         checked: node[_checked],
         disabled: node[_disabled],
-        indeterminate: input.attr(_indeterminate) == 'true' || input.attr(_determinate) == 'false'
+        indeterminate: input.attr(_indeterminate) === 'true' || input.attr(_determinate) === 'false'
       } : node[state];
 
     // Check, disable or indeterminate
@@ -323,7 +323,7 @@
       off(input, state);
 
     // Update
-    } else if (method == _update) {
+    } else if (method === _update) {
 
       // Handle states
       for (var each in active) {
@@ -334,7 +334,7 @@
         }
       }
 
-    } else if (!direct || method == 'toggle') {
+    } else if (!direct || method === 'toggle') {
 
       // Helper or label was clicked
       if (!direct) {
@@ -356,9 +356,9 @@
   function on(input, state, keep) {
     var node = input[0],
       parent = input.parent(),
-      checked = state == _checked,
-      indeterminate = state == _indeterminate,
-      disabled = state == _disabled,
+      checked = state === _checked,
+      indeterminate = state === _indeterminate,
+      disabled = state === _disabled,
       callback = indeterminate ? _determinate : checked ? _unchecked : 'enabled',
       regular = option(input, callback + capitalize(node[_type])),
       specific = option(input, state + capitalize(node[_type]));
@@ -367,7 +367,7 @@
     if (node[state] !== true) {
 
       // Toggle assigned radio buttons
-      if (!keep && state == _checked && node[_type] == _radio && node.name) {
+      if (!keep && state === _checked && node[_type] === _radio && node.name) {
         var form = input.closest('form'),
           inputs = 'input[name="' + node.name + '"]';
 
@@ -430,9 +430,9 @@
   function off(input, state, keep) {
     var node = input[0],
       parent = input.parent(),
-      checked = state == _checked,
-      indeterminate = state == _indeterminate,
-      disabled = state == _disabled,
+      checked = state === _checked,
+      indeterminate = state === _indeterminate,
+      disabled = state === _disabled,
       callback = indeterminate ? _determinate : checked ? _unchecked : 'enabled',
       regular = option(input, callback + capitalize(node[_type])),
       specific = option(input, state + capitalize(node[_type]));
@@ -441,7 +441,7 @@
     if (node[state] !== false) {
 
       // Toggle state
-      if (indeterminate || !keep || keep == 'force') {
+      if (indeterminate || !keep || keep === 'force') {
         node[state] = false;
       }
 

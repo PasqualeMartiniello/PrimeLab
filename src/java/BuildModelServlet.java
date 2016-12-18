@@ -10,6 +10,7 @@ import it.unisa.gitdm.bean.Metric;
 import it.unisa.gitdm.bean.Model;
 import it.unisa.gitdm.bean.MyClassifier;
 import it.unisa.gitdm.bean.Project;
+import it.unisa.gitdm.bean.ProjectCross;
 import it.unisa.gitdm.init.servlet.*;
 import it.unisa.primeLab.ProjectHandler;
 import java.io.File;
@@ -95,6 +96,25 @@ public class BuildModelServlet extends HttpServlet {
         Project curr = new Project(github);
         ProjectHandler.setCurrentProject(curr);
         String issueTracker = request.getParameterValues("issueTracker")[0];
+        
+        boolean isCross = false;
+        String[] checkedProjects = null;
+        if(request.getParameterValues("typeProject")[0].equals("Cross Project")){
+            isCross = true;
+            checkedProjects = request.getParameterValues("projects");
+        }
+        
+        ArrayList<ProjectCross> projects = null;
+        if(isCross) {
+            projects = new ArrayList<ProjectCross>();
+            for(String p : checkedProjects) {
+                projects.add(new ProjectCross(p, "link//" + p));
+            }
+        } else {
+           System.out.println("Non sono cross, ma sono Within");
+        }
+        
+        
         String[] checkedMetrics = request.getParameterValues("metrics");
         ArrayList<Metric> metrics = new ArrayList<Metric>();
         //System.out.println(issueTracker);
@@ -110,9 +130,9 @@ public class BuildModelServlet extends HttpServlet {
         String projName = splitted[splitted.length - 1];
         String projFolderPath = "" + Config.baseDir + projName;
         String clonePath = "" + Config.baseDir + projName + "/" + projName;
-        Model model = ModelBuilder.buildModel(curr.getName(), curr.getGitURL(), metrics, classifier);
+        Model model = ModelBuilder.buildModel(curr.getName(), curr.getGitURL(), isCross, projects, metrics, classifier);
         if (model == null) { // calculate evaluation
-            session.setAttribute("messaggio2", "Error");
+            session.setAttribute("messaggio2", "Model not found");
             ServletContext sc = getServletContext();
             RequestDispatcher rd = sc.getRequestDispatcher("/servletResponse.jsp");
             rd.forward(request, response);

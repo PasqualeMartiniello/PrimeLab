@@ -2,6 +2,7 @@
 import it.unisa.gitdm.bean.Metric;
 import it.unisa.gitdm.bean.Model;
 import it.unisa.gitdm.bean.MyClassifier;
+import it.unisa.gitdm.bean.ProjectCross;
 import it.unisa.primeLab.ProjectHandler;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,15 +24,15 @@ import weka.classifiers.Classifier;
  */
 public class ModelBuilder {
 
-    public static Model buildModel(String projName, String projURL, ArrayList<Metric> metrics, MyClassifier classifier) {
+    public static Model buildModel(String projName, String projURL, boolean isCross, ArrayList<ProjectCross> projects, ArrayList<Metric> metrics, MyClassifier classifier) {
         ArrayList<Model> models = ProjectHandler.getCurrentProject().getModels();
-        System.out.println(models);
-        Model inputModel = new Model("Model", projName, projURL, metrics, classifier,"");
+        Model inputModel = new Model("Model", projName, projURL, isCross, projects, metrics, classifier,"");
         if (models != null) {
             for (Model model: models){
                 System.out.println(model+" --- "+inputModel+" --- "+model.equals(inputModel));
-                if (model.equals(inputModel))
+                if (model.equals(inputModel)) {
                     return model;
+                }
             }
         } 
         return null;

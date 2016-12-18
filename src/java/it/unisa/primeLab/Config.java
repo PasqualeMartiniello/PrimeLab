@@ -11,5 +11,5 @@ package it.unisa.primeLab;
  * @author fabiano
  */
 public class Config {
-    public static final String baseDir = "/home/fabiano/Desktop/primeLab/";
+    public static final String baseDir = "/Users/pasqualemartiniello/Desktop/primeLab/";
 }

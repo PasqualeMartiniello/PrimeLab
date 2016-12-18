@@ -18,14 +18,18 @@ public class Model implements Serializable{
     private String name;
     private String projName;
     private String projURL;
+    private boolean isCross;
+    private ArrayList<ProjectCross> projects;
     private ArrayList<Metric> metrics;
     private MyClassifier classifier;
     private String date;
 
-    public Model(String name, String projName, String projURL, ArrayList<Metric> metrics, MyClassifier classifier, String date) {
+     public Model(String name, String projName, String projURL, boolean isCross, ArrayList<ProjectCross> projects, ArrayList<Metric> metrics, MyClassifier classifier, String date) {
         this.name = name;
         this.projName = projName;
         this.projURL = projURL;
+        this.isCross = isCross;
+        this.projects = projects;
         this.metrics = metrics;
         this.classifier = classifier;
         this.date = date;
@@ -55,6 +59,22 @@ public class Model implements Serializable{
         this.projURL = projURL;
     }
 
+    public boolean isCross(){
+        return isCross;
+    }
+    
+    public void setCross(boolean isCross){
+        this.isCross = isCross;
+    }
+    
+    public ArrayList<ProjectCross> getProjects(){
+        return projects;
+    }
+    
+    public void setProjects(ArrayList<ProjectCross> projects){
+        this.projects = projects;
+    }
+    
     public ArrayList<Metric> getMetrics() {
         return metrics;
     }
@@ -81,7 +101,7 @@ public class Model implements Serializable{
     
     @Override
     public String toString() {
-        return "Model{" + "name=" + name + ", metrics=" + metrics + ", classifier=" + classifier + '}';
+        return "Model{" + "name=" + name + ", metrics=" + metrics + ", classifier=" + classifier + ", isCross=" + isCross + ", projects=" + projects + '}' ;
     }
 
     @Override
@@ -95,11 +115,18 @@ public class Model implements Serializable{
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Model other = (Model) obj;
+        Model other = (Model) obj;
         if (!Objects.equals(this.metrics, other.metrics)) {
             return false;
         }
         if (!Objects.equals(this.classifier.toString(), other.classifier.toString())) {
+            return false;
+            
+        }
+        if(isCross() != other.isCross){
+            return false;
+        }
+        if(!Objects.equals(this.projects, other.projects)){
             return false;
         }
         return true;

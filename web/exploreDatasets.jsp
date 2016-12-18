@@ -1,6 +1,7 @@
 <%@page import="it.unisa.gitdm.bean.Model"%>
 <%@page import="it.unisa.primeLab.ProjectHandler"%>
 <%@page import="it.unisa.gitdm.bean.Project"%>
+<%@page import="it.unisa.gitdm.bean.ProjectCross"%>
 <%@page import="java.util.ArrayList"%>
 <jsp:include page="header.jsp" />
 <% ArrayList<Model> models = (ArrayList<Model>) session.getAttribute("models");%>
@@ -53,6 +54,8 @@
                         <thead>
                             <tr>
                                 <th>Project Name</th>
+                                <th>Within/Cross</th>
+                                <th>Projects</th>
                                 <th>URL</th>
                                 <th>Metrics</th>
                                 <th>Classifier</th>
@@ -67,6 +70,20 @@
                                     String metrics = m.getMetrics().toString();
                                     metrics = metrics.substring(1,metrics.length() -1);
                                     out.print("<tr><a><td>"+m.getProjName()+"</td>");
+                                    if(m.isCross()){
+                                        out.print("<td>Cross</td>");
+                                        out.print("<td>");
+                                        for(ProjectCross p : m.getProjects()) {
+                                                 out.print(p.getName());
+                                                 out.print(";");
+                                        }
+                                        out.print("</td>");
+                                    }
+                                    else {
+                                        out.print("<td>Within</td>");
+                                        out.print("<td>None</td>");
+                                    }
+                                    
                                     out.print("<td>"+m.getProjURL()+"</td>");
                                     out.print("<td>"+metrics+"</td>");
                                     out.print("<td>"+m.getClassifier()+"</td>");

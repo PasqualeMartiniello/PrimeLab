@@ -1,12 +1,14 @@
 package it.unisa.gitdm.init.servlet;
 
 import it.unisa.primeLab.ProjectHandler;
+import it.unisa.primeLab.ProjectCrossHandler;
 import it.unisa.gitdm.bean.Developer;
 import it.unisa.gitdm.bean.DeveloperTree;
 import it.unisa.gitdm.bean.Metric;
 import it.unisa.gitdm.bean.Model;
 import it.unisa.gitdm.bean.MyClassifier;
 import it.unisa.gitdm.bean.Project;
+import it.unisa.gitdm.bean.ProjectCross;
 import it.unisa.gitdm.evaluation.WekaEvaluator;
 import it.unisa.gitdm.experiments.CalculateDeveloperSemanticScattering;
 import it.unisa.gitdm.experiments.CalculateDeveloperStructuralScattering;
@@ -64,12 +66,16 @@ public class Main {
             String now = dateFormat.format(date);
             MyClassifier c1 = new MyClassifier("Naive Baesian");
             c1.setClassifier(new NaiveBayes());
-            models.add(new Model("AAA", "ant", "https://github.com/apache/ant.git", metrics, c1, now));
+            ArrayList<ProjectCross> p = new ArrayList<ProjectCross>();
+            p.add(new ProjectCross("Progetto 1", "link//Progetto 1"));
+            p.add(new ProjectCross("Progetto 2", "link//Progetto 2"));
+            p.add(new ProjectCross("Progetto 3", "link//Progetto 3"));
+            models.add(new Model("AAA", "ant", "https://github.com/apache/ant.git", true, p, metrics, c1, now));
             ArrayList<Metric> metrics2 = metrics;
             metrics2.remove(metrics.get(1));
             MyClassifier c2 = new MyClassifier("Logistic Regression");
             c2.setClassifier(new Logistic());
-            models.add(new Model("BBB", "ant", "https://github.com/apache/ant.git", metrics2, c2, now));
+            models.add(new Model("BBB", "ant", "https://github.com/apache/ant.git", false, null, metrics2, c2, now));
             Project p1 = new Project("https://github.com/apache/ant.git");
             p1.setModels(models);
             p1.setName("ant");
@@ -88,11 +94,13 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+            
             ProjectHandler.setCurrentProject(p1);
             Project curr = ProjectHandler.getCurrentProject();
             System.out.println(curr.getGitURL()+" --- "+curr.getModels());
             //ProjectHandler.addProject(p1);
             
+            System.out.println(ProjectCrossHandler.getAllProjects());
                     
     }
 }

@@ -1,3 +1,4 @@
+<%@page import="it.unisa.primeLab.ProjectCrossHandler"%>
 <%@page import="it.unisa.gitdm.bean.MyClassifier"%>
 <%@page import="it.unisa.gitdm.bean.Project"%>
 <%@page import="it.unisa.primeLab.ProjectHandler"%>
@@ -11,6 +12,7 @@
 <%@page import="weka.classifiers.Classifier"%>
 <%@page import="it.unisa.gitdm.bean.Metric"%>
 <%@page import="it.unisa.gitdm.bean.Model"%>
+<%@page import="it.unisa.gitdm.bean.ProjectCross"%>
 <% double ac = (Double) session.getAttribute("accuracy");%>
 <% double pr = (Double) session.getAttribute("precision");%>
 <% double re = (Double) session.getAttribute("recall");%>
@@ -19,12 +21,21 @@
 <% Model model = (Model) session.getAttribute("modello");%>
 <% ArrayList<EvaluationPredictors> predictors = (ArrayList<EvaluationPredictors>) session.getAttribute("predictors");%>
 <% Project project = ProjectHandler.getCurrentProject();%>
+<% ArrayList<ProjectCross> allProjectsCross = ProjectCrossHandler.getAllProjects();%>
 <%
     String metricOfModel = "";
     for (Metric m : model.getMetrics()) {
         metricOfModel += m.getNome() + "-";
     }
-
+    boolean isCrossModel = model.isCross();
+    String projectsOfModel = "";
+    if(isCrossModel) {
+        for(ProjectCross p : model.getProjects()) {
+            String s = p.getName();
+            projectsOfModel += s + ";";
+        }
+    }
+    
 %>
 <%    MyClassifier classifier = model.getClassifier();
 %>
@@ -158,6 +169,91 @@
                                                 </div>
                                                 <div class="ln_solid"></div>
                                                 <div class="form-group">
+                                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Within/Cross Project  *</label>
+                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                        <div class="col-md-3"></div>
+                                                        <div class="col-md-3">
+                                                            <input type="radio" class="flat" name="typeProject"  <% if (!isCrossModel) {
+                                                                            out.print("checked='checked'");
+                                                                        }%> required="required" value ="Within Project">
+                                                            Within Project
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <input type="radio" class="flat" name="typeProject" <% if (isCrossModel) {
+                                                                            out.print("checked='checked'");
+                                                                        }%> value="Cross Project" >
+                                                            Cross Project
+                                                        </div>
+                                                    </div>
+                                                </div>                                                
+                                                <div class="ln_solid"></div>
+                                                <div class="form-group">
+                                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">Within/Cross Project  *</label>
+                                                    <div class="col-md-6 col-sm-6 col-xs-12">
+                                                        
+                                                        <% for(ProjectCross c : allProjectsCross){
+                                                            out.print("<div class=\"col-md-4\">");
+                                                            out.print("<div class=\"checkbox\">");
+                                                            out.print("<label>");
+                                                            out.print("<input type=\"checkbox\" name=\"projects\"");
+                                                            if (!isCrossModel) {
+                                                                out.print("disabled='disabled'");
+                                                            }
+                                                            out.print("class=\"flat\" value=\""+ c.getName() + "\" required=\"required\"");
+                                                            if(projectsOfModel.contains(c.getName())){
+                                                                out.print("checked='checked'");
+                                                            }
+                                                            out.print("> "+c.getName());
+                                                            out.print("</label>");
+                                                            out.print("</div>");
+                                                            out.print("</div>");
+                                                        }
+                                                        
+                                                       %>
+                                                                
+                                                                
+                                                        <div id="newChecks">
+                                                        </div>
+                                                        <div class="col-md-offset-12">
+                                                            <button id="buttonAdd" onclick="createModalAddProject()" type="button" <% if (!isCrossModel) {
+                                                                            out.print("disabled='disabled'");
+                                                                        }%> class="btn btn-default">Add New Project</button>
+                                                        </div>
+                                                    </div>
+                                                    <div id="modalProject" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+                                                        <div class="modal-dialog modal-lg">
+                                                            <div class="modal-content">
+
+                                                                <div class="modal-header">
+                                                                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                                                                    </button>
+                                                                    <h4 class="modal-title" id="myModalLabel">Select how to add a Project</h4>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <div class="row">
+                                                                        <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                                                            <input type="radio" class="flat" name="addType" value="1">
+                                                                            From link: </label>
+                                                                        <input id="linkPath" type="text" disabled="disabled" placeholder="Insert the link for the project" class="col-md-6 col-sm-6 col-xs-12">
+                                                                    </div>
+                                                                    <div class="ln_solid"></div>
+                                                                    <div class="row">
+                                                                        <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                                                            <input type="radio" class="flat" name="addType" value="2">
+                                                                            From zip: </label>
+                                                                        <input id="zipPath" type="file" disabled="disabled" class="col-md-6 col-sm-6 col-xs-12">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                                    <button type="submit" class="btn btn-success" data-dismiss="modal" onclick="confirmModal()">Confirm</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="ln_solid"></div>
+                                                <div class="form-group">
                                                     <label class="control-label col-md-3 col-sm-3 col-xs-12">Classifier *</label>
                                                     <div class="col-md-3 col-sm-6 col-xs-12">
                                                         <select id="heard" class="form-control" required="">
@@ -170,10 +266,9 @@
                                                         </select>
                                                     </div>
                                                     <div class="col-md-3 col-sm-6 col-xs-12 col-md-offset-3">
-                                                        <button type="submit" class="btn btn-success" id="newPred" style="visibility: hidden;">New predicton</button>
+                                                        <button type="submit" name="confirm" class="btn btn-success" id="newPred" style="visibility: hidden;">New predicton</button>
                                                     </div>
                                                 </div>
-
                                             </form>
                                         </div>
                                     </div>
@@ -225,17 +320,19 @@
                             </div>
                             <div role="tabpanel" class="tab-pane fade" id="history" aria-labelledby="profile-tab">
                                 <div class="table-responsive">
-                                    <form action="http://localhost:8080/PrimeLabServer/CompareServlet" method="POST" >
+                                    <form action="CompareServlet" method="POST" >
                                         <table class="table table-striped jambo_table bulk_action">
                                             <thead>
                                                 <tr class="headings">
                                                     <th>
                                                         <input type="checkbox" id="check-all" class="flat">
                                                     </th>
-                                                    <th class="column-title">Predictions </th>
+                                                    <th>Predictions</th>
+                                                    <th>Within/Cross</th>
+                                                    <th>Projects</th>
                                                     <th>Metrics</th>
                                                     <th>Classifier</th>
-                                                    <th class="column-title">Date </th>
+                                                    <th>Date </th>
                                                     </th>
                                                     <th class="bulk-actions" colspan="7">
                                                         <a class="antoo" style="color:#fff; font-weight:500;"><button type="submit" class="btn btn-primary">Compare</button> ( <span class="action-cnt"> </span> ) <i class="fa fa-chevron-down"></i></a>
@@ -258,8 +355,21 @@
                                                         out.print("<td class='a-center'>"
                                                                 + "<input type='checkbox' class='flat' name='table_records' value='"+m.getName()+"'>"
                                                                 + "</td>"
-                                                                + "<td>Run " + i + "</td>"
-                                                                + "<td>" + metrics + "</td>"
+                                                                + "<td>Run " + i + "</td>");
+                                                        if (m.isCross()) {
+                                                            out.print("<td>Cross</td>");
+                                                            out.print("<td>");
+                                                            for (ProjectCross p : m.getProjects()) {
+                                                                out.print(p.getName());
+                                                                out.print(";");
+                                                            }
+                                                            out.print("</td>");
+                                                        } else {
+                                                            out.print("<td>Within</td>");
+                                                            out.print("<td>None</td>");
+                                                        }
+                                                                        
+                                                        out.print("<td>" + metrics + "</td>"
                                                                 + "<td>" + classif + "</td>"
                                                                 + "<td>" + m.getDate() + "</td>"
                                                                 + "</tr>");
@@ -275,7 +385,7 @@
                             </div>
                         </div>
                     </div>
-
+                                                    
                 </div>
             </div>
         </div>
@@ -388,61 +498,133 @@
 </script>
 <!-- Parsley -->
 <script>
-                                var metrics = document.getElementsByName("metric");
-                                for (var i = 0; i < metrics.length; i++)
-                                    metrics[i].addEventListener("click", function () {
-                                        document.getElementById("newPred").style.visibility = "visible";
-                                    }, true);
-                                $(document).ready(function () {
-                                    $.listen('parsley:field:validate', function () {
-                                        validateFront();
-                                    });
-                                    $('#demo-form2 .btn-success').on('click', function () {
-                                        $('#demo-form2').parsley().validate();
-                                        validateFront();
-                                    });
-                                    var validateFront = function () {
-                                        if (true === $('#demo-form2').parsley().isValid()) {
-                                            $('.bs-callout-info').removeClass('hidden');
-                                            $('.bs-callout-warning').addClass('hidden');
-                                        } else {
-                                            $('.bs-callout-info').addClass('hidden');
-                                            $('.bs-callout-warning').removeClass('hidden');
-                                        }
-                                    };
-                                    $('#heard').on('change', function () {
-                                        document.getElementById("newPred").style.visibility = "visible";
-                                    });
-                                });
-                                try {
-                                    hljs.initHighlightingOnLoad();
-                                } catch (err) {
-                                }
-                                $(document).ready(function () {
-                                    var model1 = "CK Metrics, Scattering - Naive Bayes";
-                                    var accuracy = "<%= ac%>";
-                                    var precision = "<%= pr%>";
-                                    var recall = "<%= re%>";
-                                    var fmeasure = "<%= fm%>";
-                                    var areaUnderROC = "<%= aur%>";
-                                    Morris.Bar({
-                                        element: 'graphx',
-                                        data: [
-                                            {x: 'Accuracy', y: accuracy},
-                                            {x: 'Precision', y: precision},
-                                            {x: 'Recall', y: recall},
-                                            {x: 'Fmeasure', y: fmeasure},
-                                            {x: 'AreaUnderROC', y: areaUnderROC}
-                                        ],
-                                        xkey: 'x',
-                                        ykeys: ['y'],
-                                        barColors: ['#26B99A', '#34495E', '#ACADAC', '#3498DB'],
-                                        hideHover: 'auto',
-                                        labels: [[model1]],
-                                        resize: true,
-                                    }).on('click', function (i, row) {
-                                        console.log(i, row);
-                                    });
-                                })
+    var metrics = document.getElementsByName("metric");
+    var isZip = false;
+    for (var i = 0; i < metrics.length; i++)
+        metrics[i].addEventListener("click", function () {
+            document.getElementById("newPred").style.visibility = "visible";
+        }, true);
+    $(document).ready(function () {
+        $.listen('parsley:field:validate', function () {
+            validateFront();
+        });
+        $('button[name="confirm"]').on('click', function () {
+            $('#demo-form2').parsley().validate();
+            validateFront();
+        });
+        var validateFront = function () {
+            if (true === $('#demo-form2').parsley().isValid()) {
+                $('.bs-callout-info').removeClass('hidden');
+                $('.bs-callout-warning').addClass('hidden');
+            } else {
+                $('.bs-callout-info').addClass('hidden');
+                $('.bs-callout-warning').removeClass('hidden');
+            }
+        };
+
+        $('input[name="projects"]').on('ifClicked', function() {
+            document.getElementById("newPred").style.visibility = "visible";
+        });
+        $('#heard').on('change', function () {
+            document.getElementById("newPred").style.visibility = "visible";
+        });
+    });
+    try {
+        hljs.initHighlightingOnLoad();
+    } catch (err) {
+    }
+
+    function createModalAddProject() {
+        $('#modalProject').modal();
+    }
+
+    
+    function onCrossPressed(aValue){
+        if(isCross && aValue === 'Within Project'){
+            isCross = false;
+                $('input[name="projects"]').iCheck('disable');
+                $('#buttonAdd').attr({
+                    'disabled': 'disabled'
+                });
+        } else if(!isCross && aValue === 'Cross Project') {
+            isCross = true;
+            $('input[name="projects"]').iCheck('enable');
+            $('#buttonAdd').removeAttr('disabled');
+        }
+    }
+
+    $('input[name="typeProject"]').on('ifClicked', function() {
+        onCrossPressed(this.value);
+        document.getElementById("newPred").style.visibility = "visible";
+    });
+
+    $('input[name="addType"]').on('ifClicked', function() {
+        if(this.value === '1') {
+            isZip = false;
+            $('#zipPath').attr({
+                'disabled': 'disabled'
+            });
+            $('#linkPath').removeAttr('disabled');
+        } else if(this.value === '2') {
+            isZip = true;
+            $('#linkPath').attr({
+                'disabled': 'disabled'
+            });
+            $('#zipPath').removeAttr('disabled');
+        }
+    });
+
+    function confirmModal(){
+        if(isZip) {
+            fullZipPath = $('#zipPath').val();
+            zipFile = fullZipPath.substring(12,fullZipPath.length-4);
+            if(fullZipPath !== ""){
+                $('#newChecks').append('<div class="col-md-4"><div class="checkbox"><label id="project4"><input type="checkbox" name="projects" class="flat" value="' + zipFile + '" required="required" checked="checked" data-parsley-multiple="projects"> ' + zipFile + '</label></div></div>');
+                $('input[name="projects"]').iCheck({
+                    checkboxClass: 'icheckbox_flat-green'
+                });
+            }   
+        } else {
+            fullLink = $('#linkPath').val();
+            linkFile = fullLink.substring(26, fullLink.length-4);
+            if(fullLink !== ""){
+
+
+
+                $('#newChecks').append('<div class="col-md-4"><div class="checkbox"><label><input type="checkbox" name="projects" class="flat" value="' + linkFile + '" required="required" checked="checked" data-parsley-multiple="projects"> ' + linkFile + '</label></div></div>');
+                $('input[name="projects"]').iCheck({
+                    checkboxClass: 'icheckbox_flat-green'
+                });
+            }
+        }
+    }
+
+    $(document).ready(function () {
+        isCross = <%= isCrossModel%>;
+        var model1 = "CK Metrics, Scattering - Naive Bayes";
+        var accuracy = "<%= ac%>";
+        var precision = "<%= pr%>";
+        var recall = "<%= re%>";
+        var fmeasure = "<%= fm%>";
+        var areaUnderROC = "<%= aur%>";
+        Morris.Bar({
+            element: 'graphx',
+            data: [
+                {x: 'Accuracy', y: accuracy},
+                {x: 'Precision', y: precision},
+                {x: 'Recall', y: recall},
+                {x: 'Fmeasure', y: fmeasure},
+                {x: 'AreaUnderROC', y: areaUnderROC}
+            ],
+            xkey: 'x',
+            ykeys: ['y'],
+            barColors: ['#26B99A', '#34495E', '#ACADAC', '#3498DB'],
+            hideHover: 'auto',
+            labels: [[model1]],
+            resize: true,
+        }).on('click', function (i, row) {
+            console.log(i, row);
+        });
+    })
 </script>
 <!-- /Parsley -->

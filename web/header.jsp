@@ -56,7 +56,7 @@
                             <div class="menu_section">
                                 <ul class="nav side-menu">
                                     <li><a href="index.jsp"><i class="fa fa-home"></i> Home </a></li>
-                                    <li><a href="http://localhost:8080/PrimeLabServer/ExploreDatasetServlet"><i class="fa fa-bar-chart"></i> Explore Datasets </a></li>
+                                    <li><a href="ExploreDatasetServlet"><i class="fa fa-bar-chart"></i> Explore Datasets </a></li>
                                 </ul>
                             </div>
 
