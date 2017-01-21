@@ -57,6 +57,7 @@
                                 <ul class="nav side-menu">
                                     <li><a href="index.jsp"><i class="fa fa-home"></i> Home </a></li>
                                     <li><a href="ExploreDatasetServlet"><i class="fa fa-bar-chart"></i> Explore Datasets </a></li>
+                                    <li><a href="addProject.jsp"><i class="fa fa-plus-square"></i> Add new Project </a></li>
                                 </ul>
                             </div>
 

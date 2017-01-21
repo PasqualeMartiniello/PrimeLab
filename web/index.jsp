@@ -1,8 +1,11 @@
 <%@page import="it.unisa.gitdm.bean.ProjectCross"%>
+<%@page import="it.unisa.gitdm.bean.Project"%>
 <%@page import="it.unisa.primeLab.ProjectCrossHandler"%>
+<%@page import="it.unisa.primeLab.ProjectHandler"%>
 <%@page import="java.util.ArrayList"%>
-    
-<% ArrayList<ProjectCross> projects = ProjectCrossHandler.getAllProjects(); %>
+
+<% ArrayList<Project> projects = ProjectHandler.getAllProjects(); %>
+<% ArrayList<ProjectCross> projectsTest = ProjectCrossHandler.getAllProjects(); %>
 
 <jsp:include page="header.jsp" />
 <!-- top navigation -->
@@ -55,10 +58,19 @@
                     <form action="BuildModelServlet" method="POST" id="demo-form2" data-parsley-validate="" class="form-horizontal form-label-left" novalidate="">
 
                         <div class="form-group">
-                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Github link <span class="required">*</span>
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Project <span class="required">*</span>
                             </label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <input type="text" name="github" id="github" required="required" class="form-control col-md-7 col-xs-12">
+                                <div class="col-md-12 col-sm-6 col-xs-12">
+                                <select id="github" name="github" class="form-control" required="">
+                                    <option value="">Choose...</option>
+                                     <% for (Project c : projects) {
+                                        out.print("<option value=\""+ c.getGitURL() + "\">" + c.getName());
+                                        out.print("</option>");
+                                    }
+                                %> 
+                                </select>
+                            </div>
                             </div>
                         </div>
                         <div class="form-group">
@@ -115,7 +127,7 @@
 
                         <div class="ln_solid"></div>
                         <div class="form-group">
-                            <label class="control-label col-md-3 col-sm-3 col-xs-12">Within/Cross Project *</label>
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">Within/Cross Project <span class="required">*</span></label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
                                 <div class="col-md-3"></div>
                                 <div class="col-md-3">
@@ -130,15 +142,15 @@
                         </div>
                         <div class="ln_solid"></div>
                         <div class="form-group">
-                            <label class="control-label col-md-3 col-sm-3 col-xs-12" id="crossLabel">Project Selection *</label>
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12" id="crossLabel">Projects Selection(Cross-Project Prediction) <span class ="required">*</span></label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <% for (ProjectCross c : projects) {
+                                <% for (ProjectCross c : projectsTest) {
                                         out.print("<div class=\"col-md-4\">");
                                         out.print("<div class=\"checkbox\">");
                                         out.print("<label>");
                                         out.print("<input type=\"checkbox\" name=\"projects\"");
                                         out.print("disabled='disabled'");
-                                        out.print("class=\"flat\" value=\"" + c.getName() + "\" required=\"required\"");
+                                        out.print("class=\"flat\" value=\"" + c.getName() + "\"");
                                         out.print("checked='checked'");
                                         out.print("> " + c.getName());
                                         out.print("</label>");
@@ -146,7 +158,7 @@
                                         out.print("</div>");
                                     }
                                 %> 
-                                <div id="newChecks">
+<!--                                <div id="newChecks">
                                     
                                 </div>
                                 <div class="col-md-offset-12">
@@ -182,7 +194,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div>-->
                             </div>
                         </div>
                         <div class="ln_solid"></div>
@@ -303,7 +315,7 @@
 <script>
 
     isModalOnFocus = false;
-    isZip = false;
+//    isZip = false;
     function mySubmit() {
         if (true === $('#demo-form2').parsley().isValid()) {
             createModal();
@@ -342,47 +354,51 @@
         isModalOnFocus = false;
         document.getElementById("bottomModal").innerHTML = '';
     }
-                                      
-    function confirmModal(){
-        if(isZip) {
-            fullZipPath = $('#zipPath').val();
-            zipFile = fullZipPath.substring(12,fullZipPath.length-4);
-            if(fullZipPath !== ""){
-                
-                
-                
-                $('#newChecks').append('<div class="col-md-4"><div class="checkbox"><label><input type="checkbox" name="projects" class="flat" value="' + fullZipPath + '" required="required" checked="checked" data-parsley-multiple="projects"> ' + zipFile + '</label></div></div>');
-                $('input[name="projects"]').iCheck({
-                    checkboxClass: 'icheckbox_flat-green'
-                });
-            }
-        } else {
-            fullLink = $('#linkPath').val();
-            linkFile = fullLink.substring(26, fullLink.length-4);
-            if(fullLink !== ""){
-                
-                
-                
-                $('#newChecks').append('<div class="col-md-4"><div class="checkbox"><label><input type="checkbox" name="projects" class="flat" value="' + fullLink + '" required="required" checked="checked" data-parsley-multiple="projects"> ' + linkFile + '</label></div></div>');
-                $('input[name="projects"]').iCheck({
-                    checkboxClass: 'icheckbox_flat-green'
-                });
-            }
-        }
-    }
+          
+//    OLD CODE
+//    function confirmModal(){
+//        if(isZip) {
+//            fullZipPath = $('#zipPath').val();
+//            zipFile = fullZipPath.substring(12,fullZipPath.length-4);
+//            if(fullZipPath !== ""){
+//                //Add the project loaded to the list of projectCross 
+//
+//                $('#newChecks').append('<div class="col-md-4"><div class="checkbox"><label><input type="checkbox" name="projects" class="flat" value="' + fullZipPath + '" required="required" checked="checked" data-parsley-multiple="projects"> ' + zipFile + '</label></div></div>');
+//                $('input[name="projects"]').iCheck({
+//                    checkboxClass: 'icheckbox_flat-green'
+//                });
+//            }
+//        } else {
+//            fullLink = $('#linkPath').val();
+//            linkFile = fullLink.substring(26, fullLink.length-4);
+//            if(fullLink !== ""){
+//                //Add the project loaded to the list of projectCross 
+//                
+//                $('#newChecks').append('<div class="col-md-4"><div class="checkbox"><label><input type="checkbox" name="projects" class="flat" value="' + fullLink + '" required="required" checked="checked" data-parsley-multiple="projects"> ' + linkFile + '</label></div></div>');
+//                $('input[name="projects"]').iCheck({
+//                    checkboxClass: 'icheckbox_flat-green'
+//                });
+//            }
+//        }
+//    }
 
     function onCrossPressed(aValue) {
         if (isCross && aValue === 'Within Project') {
             isCross = false;
             $('input[name="projects"]').iCheck('disable');
-            $('#buttonAdd').attr({
-                'disabled': 'disabled'
-            });
+            $('input[name="projects"]').removeAttr('required');
+           
+//            $('#buttonAdd').attr({
+//                'disabled': 'disabled'
+//            });
             
         } else if (!isCross && aValue === 'Cross Project') {
             isCross = true;
             $('input[name="projects"]').iCheck('enable');
-            $('#buttonAdd').removeAttr('disabled');    
+            $('input[name="projects"]').attr({
+               'required' : 'required' 
+            });
+//            $('#buttonAdd').removeAttr('disabled');    
         }
     }
 
@@ -390,21 +406,22 @@
         onCrossPressed(this.value);
     });
 
-    $('input[name="addType"]').on('ifClicked', function () {
-        if (this.value === '1') {
-            isZip = false;
-            $('#zipPath').attr({
-                'disabled': 'disabled'
-            });
-            $('#linkPath').removeAttr('disabled');
-        } else if (this.value === '2') {
-            isZip = true;
-            $('#linkPath').attr({
-                'disabled': 'disabled'
-            });
-            $('#zipPath').removeAttr('disabled');
-        }
-    });
+//    OLD CODE
+//    $('input[name="addType"]').on('ifClicked', function () {
+//        if (this.value === '1') {
+//            isZip = false;
+//            $('#zipPath').attr({
+//                'disabled': 'disabled'
+//            });
+//            $('#linkPath').removeAttr('disabled');
+//        } else if (this.value === '2') {
+//            isZip = true;
+//            $('#linkPath').attr({
+//                'disabled': 'disabled'
+//            });
+//            $('#zipPath').removeAttr('disabled');
+//        }
+//    });
 
     $(document).ready(function () {
         isCross = false;

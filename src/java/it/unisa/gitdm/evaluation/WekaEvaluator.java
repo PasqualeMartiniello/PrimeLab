@@ -191,17 +191,17 @@ public class WekaEvaluator {
             }
             train.setClassIndex(classFeatureIndex);
             test.setClassIndex(classFeatureIndex);
+            System.out.println(test);
             // build and evaluate classifier
             pClassifier.buildClassifier(train);
             singleEvaluation.evaluateModel(pClassifier, test);
-            if(singleEvaluation == null) {
-                singleEvaluation = new AggregateableEvaluation(singleFoldEvaluation);
-                singleEvaluation.aggregate(singleFoldEvaluation);
-            } else {
-                singleEvaluation.aggregate(singleFoldEvaluation);
-            }
+//            if(singleEvaluation == null) {
+//                singleEvaluation = new AggregateableEvaluation(singleFoldEvaluation);
+//                singleEvaluation.aggregate(singleFoldEvaluation);
+//            } else {
+//                singleEvaluation.aggregate(singleFoldEvaluation);
+ //           }
         }
-        
         
             
             // add predictions
@@ -230,7 +230,7 @@ public class WekaEvaluator {
         double fmeasure = 2 * ((singleEvaluation.precision(positiveValueIndexOfClassFeature) * singleEvaluation.recall(positiveValueIndexOfClassFeature))
                 / (singleEvaluation.precision(positiveValueIndexOfClassFeature) + singleEvaluation.recall(positiveValueIndexOfClassFeature)));
         
-        File wekaOutput = new File(baseFolderPath + projectName + "/predictors.csv");
+        File wekaOutput = new File(baseFolderPath + projectName + "/wekaOutput.csv");
         PrintWriter pw1 = new PrintWriter(wekaOutput);
 
         pw1.write(accuracy + ";" + singleEvaluation.precision(positiveValueIndexOfClassFeature) + ";"

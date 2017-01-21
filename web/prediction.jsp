@@ -212,15 +212,15 @@
                                                        %>
                                                                 
                                                                 
-                                                        <div id="newChecks">
-                                                        </div>
-                                                        <div class="col-md-offset-12">
-                                                            <button id="buttonAdd" onclick="createModalAddProject()" type="button" <% if (!isCrossModel) {
-                                                                            out.print("disabled='disabled'");
-                                                                        }%> class="btn btn-default">Add New Project</button>
-                                                        </div>
+<!--                                                        <div id="newChecks">
+                                                        </div>-->
+<!--                                                        <div class="col-md-offset-12">
+                                                            <button id="buttonAdd" onclick="createModalAddProject()" type="button" <% //if (!isCrossModel) {
+                                                                           //out.print("disabled='disabled'"); }
+                                                                        %> class="btn btn-default">Add New Project</button>
+                                                        </div>-->
                                                     </div>
-                                                    <div id="modalProject" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+<!--                                                    <div id="modalProject" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
                                                         <div class="modal-dialog modal-lg">
                                                             <div class="modal-content">
 
@@ -250,7 +250,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </div>-->
                                                 </div>
                                                 <div class="ln_solid"></div>
                                                 <div class="form-group">
@@ -522,9 +522,7 @@
             }
         };
 
-        $('input[name="projects"]').on('ifClicked', function() {
-            document.getElementById("newPred").style.visibility = "visible";
-        });
+        
         $('#heard').on('change', function () {
             document.getElementById("newPred").style.visibility = "visible";
         });
@@ -534,22 +532,25 @@
     } catch (err) {
     }
 
-    function createModalAddProject() {
-        $('#modalProject').modal();
-    }
-
+   
     
     function onCrossPressed(aValue){
         if(isCross && aValue === 'Within Project'){
             isCross = false;
-                $('input[name="projects"]').iCheck('disable');
-                $('#buttonAdd').attr({
-                    'disabled': 'disabled'
-                });
-        } else if(!isCross && aValue === 'Cross Project') {
+               $('input[name="projects"]').iCheck('disable');
+               $('input[name="projects"]').removeAttr('required');
+           
+//            $('#buttonAdd').attr({
+//                'disabled': 'disabled'
+//            });
+            
+        } else if (!isCross && aValue === 'Cross Project') {
             isCross = true;
             $('input[name="projects"]').iCheck('enable');
-            $('#buttonAdd').removeAttr('disabled');
+            $('input[name="projects"]').attr({
+               'required' : 'required' 
+            });
+//            $('#buttonAdd').removeAttr('disabled');   
         }
     }
 
@@ -558,46 +559,64 @@
         document.getElementById("newPred").style.visibility = "visible";
     });
 
-    $('input[name="addType"]').on('ifClicked', function() {
-        if(this.value === '1') {
-            isZip = false;
-            $('#zipPath').attr({
-                'disabled': 'disabled'
-            });
-            $('#linkPath').removeAttr('disabled');
-        } else if(this.value === '2') {
-            isZip = true;
-            $('#linkPath').attr({
-                'disabled': 'disabled'
-            });
-            $('#zipPath').removeAttr('disabled');
-        }
+    $('input[name="projects"]').on('ifClicked', function() {
+        document.getElementById("newPred").style.visibility = "visible";
     });
-
-    function confirmModal(){
-        if(isZip) {
-            fullZipPath = $('#zipPath').val();
-            zipFile = fullZipPath.substring(12,fullZipPath.length-4);
-            if(fullZipPath !== ""){
-                $('#newChecks').append('<div class="col-md-4"><div class="checkbox"><label id="project4"><input type="checkbox" name="projects" class="flat" value="' + zipFile + '" required="required" checked="checked" data-parsley-multiple="projects"> ' + zipFile + '</label></div></div>');
-                $('input[name="projects"]').iCheck({
-                    checkboxClass: 'icheckbox_flat-green'
-                });
-            }   
-        } else {
-            fullLink = $('#linkPath').val();
-            linkFile = fullLink.substring(26, fullLink.length-4);
-            if(fullLink !== ""){
-
-
-
-                $('#newChecks').append('<div class="col-md-4"><div class="checkbox"><label><input type="checkbox" name="projects" class="flat" value="' + linkFile + '" required="required" checked="checked" data-parsley-multiple="projects"> ' + linkFile + '</label></div></div>');
-                $('input[name="projects"]').iCheck({
-                    checkboxClass: 'icheckbox_flat-green'
-                });
-            }
-        }
-    }
+    
+//    OLD CODE
+//    
+//    function createModalAddProject() {
+//        $('#modalProject').modal();
+//    }
+//    
+//    $('input[name="addType"]').on('ifClicked', function() {
+//        if(this.value === '1') {
+//            isZip = false;
+//            $('#zipPath').attr({
+//                'disabled': 'disabled'
+//            });
+//            $('#linkPath').removeAttr('disabled');
+//        } else if(this.value === '2') {
+//            isZip = true;
+//            $('#linkPath').attr({
+//                'disabled': 'disabled'
+//            });
+//            $('#zipPath').removeAttr('disabled');
+//        }
+//    });
+//
+//    
+//    function confirmModal(){
+//        if(isZip) {
+//            fullZipPath = $('#zipPath').val();
+//            zipFile = fullZipPath.substring(12,fullZipPath.length-4);
+//            if(fullZipPath !== ""){
+//                //Add the project loaded to the list of projectCross 
+//
+//                $('#newChecks').append('<div class="col-md-4"><div class="checkbox"><label id="project4"><input type="checkbox" name="projects" class="flat" value="' + zipFile + '" required="required" checked="checked" data-parsley-multiple="projects"> ' + zipFile + '</label></div></div>');
+//                $('input[name="projects"]').iCheck({
+//                    checkboxClass: 'icheckbox_flat-green'
+//                });
+//                $('input[name="projects"]').on('ifClicked', function() {
+//                    document.getElementById("newPred").style.visibility = "visible";
+//                });
+//            }   
+//        } else {
+//            fullLink = $('#linkPath').val();
+//            linkFile = fullLink.substring(26, fullLink.length-4);
+//            if(fullLink !== ""){
+//                //Add the project loaded to the list of projectCross 
+//
+//                $('#newChecks').append('<div class="col-md-4"><div class="checkbox"><label><input type="checkbox" name="projects" class="flat" value="' + linkFile + '" required="required" checked="checked" data-parsley-multiple="projects"> ' + linkFile + '</label></div></div>');
+//                $('input[name="projects"]').iCheck({
+//                    checkboxClass: 'icheckbox_flat-green'
+//                });
+//                $('input[name="projects"]').on('ifClicked', function() {
+//                    document.getElementById("newPred").style.visibility = "visible";
+//                });
+//            }
+//        }
+//    }
 
     $(document).ready(function () {
         isCross = <%= isCrossModel%>;
@@ -621,10 +640,10 @@
             barColors: ['#26B99A', '#34495E', '#ACADAC', '#3498DB'],
             hideHover: 'auto',
             labels: [[model1]],
-            resize: true,
+            resize: true
         }).on('click', function (i, row) {
             console.log(i, row);
         });
-    })
+    });
 </script>
 <!-- /Parsley -->

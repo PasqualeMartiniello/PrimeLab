@@ -46,7 +46,7 @@ public class CosineSimilarity {
     public double computeSimilarity(String[] pDocumentOne, String[] pDocumentTwo)
             throws IOException {
         this.stopwordList = new File(
-                "src/main/resources/stopword.txt");
+                "src/java/main/resources/stopword.txt");
         if (!stopwordList.exists()) {
             File stopwordListDirectory = new File("semanAnalysis");
             stopwordListDirectory.mkdirs();
