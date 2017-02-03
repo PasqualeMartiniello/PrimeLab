@@ -1,4 +1,3 @@
-<%@page import="it.unisa.primeLab.ProjectCrossHandler"%>
 <%@page import="it.unisa.gitdm.bean.MyClassifier"%>
 <%@page import="it.unisa.gitdm.bean.Project"%>
 <%@page import="it.unisa.primeLab.ProjectHandler"%>
@@ -12,7 +11,6 @@
 <%@page import="weka.classifiers.Classifier"%>
 <%@page import="it.unisa.gitdm.bean.Metric"%>
 <%@page import="it.unisa.gitdm.bean.Model"%>
-<%@page import="it.unisa.gitdm.bean.ProjectCross"%>
 <% double ac = (Double) session.getAttribute("accuracy");%>
 <% double pr = (Double) session.getAttribute("precision");%>
 <% double re = (Double) session.getAttribute("recall");%>
@@ -21,7 +19,7 @@
 <% Model model = (Model) session.getAttribute("modello");%>
 <% ArrayList<EvaluationPredictors> predictors = (ArrayList<EvaluationPredictors>) session.getAttribute("predictors");%>
 <% Project project = ProjectHandler.getCurrentProject();%>
-<% ArrayList<ProjectCross> allProjectsCross = ProjectCrossHandler.getAllProjects();%>
+<% ArrayList<Project> allProjects = ProjectHandler.getAllProjects();%>
 <%
     String metricOfModel = "";
     for (Metric m : model.getMetrics()) {
@@ -30,9 +28,8 @@
     boolean isCrossModel = model.isCross();
     String projectsOfModel = "";
     if(isCrossModel) {
-        for(ProjectCross p : model.getProjects()) {
-            String s = p.getName();
-            projectsOfModel += s + ";";
+        for(String p : model.getProjects()) {
+            projectsOfModel += p + ";";
         }
     }
     
@@ -191,15 +188,19 @@
                                                     <label class="control-label col-md-3 col-sm-3 col-xs-12">Within/Cross Project  *</label>
                                                     <div class="col-md-6 col-sm-6 col-xs-12">
                                                         
-                                                        <% for(ProjectCross c : allProjectsCross){
+                                                        <% for(Project c : allProjects){
                                                             out.print("<div class=\"col-md-4\">");
                                                             out.print("<div class=\"checkbox\">");
                                                             out.print("<label>");
                                                             out.print("<input type=\"checkbox\" name=\"projects\"");
                                                             if (!isCrossModel) {
                                                                 out.print("disabled='disabled'");
+                                                            }if(project.getName() == c.getName()) {
+                                                                out.print("class=\"flat\" value=\""+ c.getGitURL() + "\" disabled='disabled' required=\"required\"");
+                                                            } else {
+                                                                out.print("class=\"flat\" value=\""+ c.getGitURL() + "\" required=\"required\"");
                                                             }
-                                                            out.print("class=\"flat\" value=\""+ c.getName() + "\" required=\"required\"");
+                                                            out.print("class=\"flat\" value=\""+ c.getGitURL() + "\" required=\"required\"");
                                                             if(projectsOfModel.contains(c.getName())){
                                                                 out.print("checked='checked'");
                                                             }
@@ -359,9 +360,8 @@
                                                         if (m.isCross()) {
                                                             out.print("<td>Cross</td>");
                                                             out.print("<td>");
-                                                            for (ProjectCross p : m.getProjects()) {
-                                                                out.print(p.getName());
-                                                                out.print(";");
+                                                            for (String p : m.getProjects()) {
+                                                                out.print(p + ";");
                                                             }
                                                             out.print("</td>");
                                                         } else {
@@ -411,6 +411,7 @@
 <script src="scripts/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 
 <script>
+    
     $(document).ready(function () {
         var handleDataTableButtons = function () {
             if ($("#datatable-buttons").length) {
@@ -532,7 +533,9 @@
     } catch (err) {
     }
 
-   
+       
+    var project = "<%= project.getName()%>";
+
     
     function onCrossPressed(aValue){
         if(isCross && aValue === 'Within Project'){
@@ -547,6 +550,15 @@
         } else if (!isCross && aValue === 'Cross Project') {
             isCross = true;
             $('input[name="projects"]').iCheck('enable');
+            $('input[name="projects"]').each( function() {
+                dirName = this.value.split(".com/")[1].split(".git")[0];
+                splitted = dirName.split("/");
+                toRemove = splitted[splitted.length - 1];
+                    if(toRemove === project) {
+                        $(this).iCheck('disable');
+                        $(this).iCheck('uncheck');
+                    }
+            });
             $('input[name="projects"]').attr({
                'required' : 'required' 
             });

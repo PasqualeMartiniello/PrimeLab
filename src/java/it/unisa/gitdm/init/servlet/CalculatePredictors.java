@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-class CalculatePredictors {
+public class CalculatePredictors {
 
     public CalculatePredictors(String projectName, String issueTracker, String issueTrackerPath,
                                String productName, String periodLength, String baseFolderPath,

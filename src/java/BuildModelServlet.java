@@ -10,7 +10,6 @@ import it.unisa.gitdm.bean.Metric;
 import it.unisa.gitdm.bean.Model;
 import it.unisa.gitdm.bean.MyClassifier;
 import it.unisa.gitdm.bean.Project;
-import it.unisa.gitdm.bean.ProjectCross;
 import it.unisa.gitdm.init.servlet.*;
 import it.unisa.primeLab.ProjectHandler;
 import java.io.File;
@@ -95,7 +94,7 @@ public class BuildModelServlet extends HttpServlet {
         String github = request.getParameter("github");
         Project curr = new Project(github);
         ProjectHandler.setCurrentProject(curr);
-        String issueTracker = request.getParameterValues("issueTracker")[0];
+        String issueTracker = request.getParameter("issueTracker");
         
         boolean isCross = false;
         String[] checkedProjects = null;
@@ -104,11 +103,11 @@ public class BuildModelServlet extends HttpServlet {
             checkedProjects = request.getParameterValues("projects");
         }
         
-        ArrayList<ProjectCross> projects = null;
+        ArrayList<String> projects = null;
         if(isCross) {
-            projects = new ArrayList<ProjectCross>();
+            projects = new ArrayList<String>();
             for(String p : checkedProjects) {
-                projects.add(new ProjectCross(p, "link//" + p));
+                projects.add(p);
             }
         } else {
            System.out.println("Non sono cross, ma sono Within");

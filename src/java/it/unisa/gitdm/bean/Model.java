@@ -19,12 +19,12 @@ public class Model implements Serializable{
     private String projName;
     private String projURL;
     private boolean isCross;
-    private ArrayList<ProjectCross> projects;
+    private ArrayList<String> projects;
     private ArrayList<Metric> metrics;
     private MyClassifier classifier;
     private String date;
 
-     public Model(String name, String projName, String projURL, boolean isCross, ArrayList<ProjectCross> projects, ArrayList<Metric> metrics, MyClassifier classifier, String date) {
+     public Model(String name, String projName, String projURL, boolean isCross, ArrayList<String> projects, ArrayList<Metric> metrics, MyClassifier classifier, String date) {
         this.name = name;
         this.projName = projName;
         this.projURL = projURL;
@@ -67,11 +67,11 @@ public class Model implements Serializable{
         this.isCross = isCross;
     }
     
-    public ArrayList<ProjectCross> getProjects(){
+    public ArrayList<String> getProjects(){
         return projects;
     }
     
-    public void setProjects(ArrayList<ProjectCross> projects){
+    public void setProjects(ArrayList<String> projects){
         this.projects = projects;
     }
     

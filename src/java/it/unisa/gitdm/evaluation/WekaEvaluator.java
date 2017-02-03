@@ -191,16 +191,19 @@ public class WekaEvaluator {
             }
             train.setClassIndex(classFeatureIndex);
             test.setClassIndex(classFeatureIndex);
-            System.out.println(test);
+          
+            //System.out.println(test);
             // build and evaluate classifier
             pClassifier.buildClassifier(train);
-            singleEvaluation.evaluateModel(pClassifier, test);
-//            if(singleEvaluation == null) {
-//                singleEvaluation = new AggregateableEvaluation(singleFoldEvaluation);
-//                singleEvaluation.aggregate(singleFoldEvaluation);
-//            } else {
-//                singleEvaluation.aggregate(singleFoldEvaluation);
- //           }
+       
+           
+            singleFoldEvaluation.evaluateModel(pClassifier, test);
+            if(singleEvaluation == null) {
+                singleEvaluation = new AggregateableEvaluation(singleFoldEvaluation);
+                singleEvaluation.aggregate(singleFoldEvaluation);
+            } else {
+                singleEvaluation.aggregate(singleFoldEvaluation);
+            }
         }
         
             
@@ -230,7 +233,7 @@ public class WekaEvaluator {
         double fmeasure = 2 * ((singleEvaluation.precision(positiveValueIndexOfClassFeature) * singleEvaluation.recall(positiveValueIndexOfClassFeature))
                 / (singleEvaluation.precision(positiveValueIndexOfClassFeature) + singleEvaluation.recall(positiveValueIndexOfClassFeature)));
         
-        File wekaOutput = new File(baseFolderPath + projectName + "/wekaOutput.csv");
+        File wekaOutput = new File(baseFolderPath + "/models/" + pModelName + "-wekaOutput.csv");
         PrintWriter pw1 = new PrintWriter(wekaOutput);
 
         pw1.write(accuracy + ";" + singleEvaluation.precision(positiveValueIndexOfClassFeature) + ";"
@@ -241,5 +244,7 @@ public class WekaEvaluator {
                 + singleEvaluation.numFalsePositives(positiveValueIndexOfClassFeature) + ";" + singleEvaluation.numFalseNegatives(positiveValueIndexOfClassFeature) + ";"
                 + singleEvaluation.numTrueNegatives(positiveValueIndexOfClassFeature) + ";" + accuracy + ";" + singleEvaluation.precision(positiveValueIndexOfClassFeature) + ";"
                 + singleEvaluation.recall(positiveValueIndexOfClassFeature) + ";" + fmeasure + ";" + singleEvaluation.areaUnderROC(positiveValueIndexOfClassFeature) + "\n");
+        
+        pw1.close();
     }
 }

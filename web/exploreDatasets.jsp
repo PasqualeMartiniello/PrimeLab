@@ -1,7 +1,6 @@
 <%@page import="it.unisa.gitdm.bean.Model"%>
 <%@page import="it.unisa.primeLab.ProjectHandler"%>
 <%@page import="it.unisa.gitdm.bean.Project"%>
-<%@page import="it.unisa.gitdm.bean.ProjectCross"%>
 <%@page import="java.util.ArrayList"%>
 <jsp:include page="header.jsp" />
 <% ArrayList<Model> models = (ArrayList<Model>) session.getAttribute("models");%>
@@ -73,9 +72,8 @@
                                     if(m.isCross()){
                                         out.print("<td>Cross</td>");
                                         out.print("<td>");
-                                        for(ProjectCross p : m.getProjects()) {
-                                                 out.print(p.getName());
-                                                 out.print(";");
+                                        for(String p : m.getProjects()) {
+                                                 out.print(p+";");
                                         }
                                         out.print("</td>");
                                     }

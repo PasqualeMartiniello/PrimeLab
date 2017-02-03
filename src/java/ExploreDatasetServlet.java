@@ -44,7 +44,8 @@ public class ExploreDatasetServlet extends HttpServlet {
         ArrayList<Project> allProj = ProjectHandler.getAllProjects();
         ArrayList<Model> models = new ArrayList<Model>();
         for (Project p : allProj) {
-            models.addAll(p.getModels());
+            if(p.getModels() != null)
+                models.addAll(p.getModels());
         }
         models.sort(new Comparator<Model>() {
             @Override
