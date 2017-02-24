@@ -15,16 +15,17 @@ import weka.classifiers.Classifier;
  * @author fabiano
  */
 public class Model implements Serializable{
+    
     private String name;
     private String projName;
     private String projURL;
     private boolean isCross;
     private ArrayList<String> projects;
     private ArrayList<Metric> metrics;
-    private MyClassifier classifier;
+    private String classifier;
     private String date;
 
-     public Model(String name, String projName, String projURL, boolean isCross, ArrayList<String> projects, ArrayList<Metric> metrics, MyClassifier classifier, String date) {
+     public Model(String name, String projName, String projURL, boolean isCross, ArrayList<String> projects, ArrayList<Metric> metrics, String classifier, String date) {
         this.name = name;
         this.projName = projName;
         this.projURL = projURL;
@@ -83,11 +84,11 @@ public class Model implements Serializable{
         this.metrics = metrics;
     }
 
-    public MyClassifier getClassifier() {
+    public String getClassifier() {
         return classifier;
     }
 
-    public void setClassifier(MyClassifier classifier) {
+    public void setClassifier(String classifier) {
         this.classifier = classifier;
     }
 
@@ -116,6 +117,9 @@ public class Model implements Serializable{
             return false;
         }
         Model other = (Model) obj;
+        if(!Objects.equals(this.projName, other.projName)){
+            return false;
+        }
         if (!Objects.equals(this.metrics, other.metrics)) {
             return false;
         }

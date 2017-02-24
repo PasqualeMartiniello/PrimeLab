@@ -321,7 +321,7 @@
                             </div>
                             <div role="tabpanel" class="tab-pane fade" id="history" aria-labelledby="profile-tab">
                                 <div class="table-responsive">
-                                    <form action="CompareServlet" method="POST" >
+                                    <form action="CompareServlet" method="POST">
                                         <table class="table table-striped jambo_table bulk_action">
                                             <thead>
                                                 <tr class="headings">
@@ -404,10 +404,8 @@
 <script src="scripts/icheck.js"></script>
 <script src="scripts/parsleyjs/dist/parsley.js"></script>
 
-<script src="scripts/raphael.js"></script>
-<script src="scripts/morris.js"></script>
-<script src="scripts/datatables.net/js/jquery.dataTables.min.js"></script>
 
+<script src="scripts/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="scripts/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 
 <script>

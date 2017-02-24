@@ -1,9 +1,10 @@
+<%@page import="it.unisa.primeLab.Config"%>
 <%@page import="it.unisa.gitdm.bean.Model"%>
 <%@page import="it.unisa.primeLab.ProjectHandler"%>
 <%@page import="it.unisa.gitdm.bean.Project"%>
 <%@page import="java.util.ArrayList"%>
 <jsp:include page="header.jsp" />
-<% ArrayList<Model> models = (ArrayList<Model>) session.getAttribute("models");%>
+<% ArrayList<Project> projects = ProjectHandler.getAllProjects(); %>
 <!-- top navigation -->
 <!--<div class="top_nav">
     <div class="nav_menu">
@@ -27,7 +28,7 @@
     <div class="">
         <div class="page-title">
             <div class="title_left">
-                <h3>Titolo</h3>
+                <h3>Explore Datasets</h3>
             </div>
 
             <div class="title_right">
@@ -44,51 +45,38 @@
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="x_panel">
                 <div class="x_title">
-                    <h2>Default Example <small>Users</small></h2>
+                    <h2>Datasets</h2>
 
                     <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
                     <table id="datatable" class="table table-striped table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Project Name</th>
-                                <th>Within/Cross</th>
-                                <th>Projects</th>
-                                <th>URL</th>
-                                <th>Metrics</th>
-                                <th>Classifier</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-
-
-                        <tbody> 
-                            <%
-                                for (Model m : models){
-                                    String metrics = m.getMetrics().toString();
-                                    metrics = metrics.substring(1,metrics.length() -1);
-                                    out.print("<tr><a><td>"+m.getProjName()+"</td>");
-                                    if(m.isCross()){
-                                        out.print("<td>Cross</td>");
-                                        out.print("<td>");
-                                        for(String p : m.getProjects()) {
-                                                 out.print(p+";");
+                            <thead>
+                                <tr>
+                                    <th>Project Name</th>
+                                    <th>Github URL</th>
+                                    <th>N. Old Computation</th>
+                                    <th></th>
+                                </tr>
+                            <tbody>
+                                 <%
+                                     for(Project p : projects){
+                                        out.print("<tr><td style=\"vertical-align:middle\">" + p.getName() + "</td>");
+                                        if(p.getGitURL() == null) {
+                                            out.print("<td style=\"vertical-align:middle\">No Link Availaeble</td>");
+                                        } else {
+                                            out.print("<td style=\"vertical-align:middle\">" + p.getGitURL() + "</td>");
                                         }
-                                        out.print("</td>");
-                                    }
-                                    else {
-                                        out.print("<td>Within</td>");
-                                        out.print("<td>None</td>");
-                                    }
-                                    
-                                    out.print("<td>"+m.getProjURL()+"</td>");
-                                    out.print("<td>"+metrics+"</td>");
-                                    out.print("<td>"+m.getClassifier()+"</td>");
-                                    out.print("<td>"+m.getDate()+"</td>");
-                                }
-                            %>
-                        </tbody>
+                                        if(p.getModels() == null) {
+                                         out.print("<td style=\"vertical-align:middle\">0</td>");   
+                                        } else {
+                                            out.print("<td style=\"vertical-align:middle\">" + p.getModels().size() + "</td>");
+                                        }
+                                        out.print("<td style=\"text-align:center\"><button class=\"btn btn-default\"><a href=\"file://"+Config.baseDir + p.getName() +"/predictors.csv\" class=\"fa fa-download\" download></button></td></tr>");
+                                     }
+                                     %>
+                            </tbody>
+                            </thead>
                     </table>
                 </div>
             </div>
@@ -107,90 +95,3 @@
 <script src="scripts/datatables.net/js/jquery.dataTables.min.js"></script>
 
 <script src="scripts/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-
-<script>
-    $(document).ready(function () {
-        var handleDataTableButtons = function () {
-            if ($("#datatable-buttons").length) {
-                $("#datatable-buttons").DataTable({
-                    dom: "Bfrtip",
-                    buttons: [
-                        {
-                            extend: "copy",
-                            className: "btn-sm"
-                        },
-                        {
-                            extend: "csv",
-                            className: "btn-sm"
-                        },
-                        {
-                            extend: "excel",
-                            className: "btn-sm"
-                        },
-                        {
-                            extend: "pdfHtml5",
-                            className: "btn-sm"
-                        },
-                        {
-                            extend: "print",
-                            className: "btn-sm"
-                        },
-                    ],
-                    responsive: true
-                });
-            }
-        };
-
-        TableManageButtons = function () {
-            "use strict";
-            return {
-                init: function () {
-                    handleDataTableButtons();
-                }
-            };
-        }();
-
-        $('#datatable').dataTable({
-            'order': [[1, 'asc']],
-            'columnDefs': [
-                {orderable: false, targets: [2,3]}
-            ],
-            'iDisplayLength': 10,
-        });
-
-        $('#datatable-keytable').DataTable({
-            keys: true
-        });
-
-        $('#datatable-responsive').DataTable();
-
-        $('#datatable-scroller').DataTable({
-            ajax: "js/datatables/json/scroller-demo.json",
-            deferRender: true,
-            scrollY: 380,
-            scrollCollapse: true,
-            scroller: true
-        });
-
-        $('#datatable-fixed-header').DataTable({
-            fixedHeader: true
-        });
-
-        var $datatable = $('#datatable-checkbox');
-
-        $datatable.dataTable({
-            'order': [[1, 'asc']],
-            'columnDefs': [
-                {orderable: false, targets: [0]}
-            ]
-        });
-        
-        $datatable.on('draw.dt', function () {
-            $('input').iCheck({
-                checkboxClass: 'icheckbox_flat-green'
-            });
-        });
-
-        TableManageButtons.init();
-    });
-</script>

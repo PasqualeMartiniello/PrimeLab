@@ -30,7 +30,7 @@
     <div class="">
         <div class="page-title">
             <div class="title_left">
-                <h3>Titolo</h3>
+                <h3>Add Project</h3>
             </div>
 
             <div class="title_right">
@@ -73,10 +73,10 @@
                                 <div class="active tab-pane" id="sectionLink">
                                     <br>
                                     <div class="form-group">
-                                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Github link *
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Github link <span class="required">*</span>
                                         </label>
                                         <div class="col-md-6 col-sm-6 col-xs-12">
-                                            <input type="text" name="github" id="github" class="form-control col-md-7 col-xs-12">
+                                            <input type="text" name="github" id="github" class="form-control col-md-7 col-xs-12" required>
                                         </div>
                                     </div>
                                     <div class="ln_solid"></div>
@@ -145,7 +145,7 @@
                                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Csv File *
                                         </label>
                                         <div class="col-md-6 col-sm-6 col-xs-12">
-                                            <input type="file" name="cvs" id="csv" accetp=".csv" class="form-control col-md-7 col-xs-12">
+                                            <input type="file" name="csv" id="csv" accetp=".csv" class="form-control col-md-7 col-xs-12">
                                         </div>
                                     </div> 
                                     <div class="ln_solid"></div>
@@ -241,7 +241,7 @@
             if($('input[name="type"]').val() === 'section1') {
                 document.getElementById("githubConf").innerHTML = $('#github').val();
                 document.getElementById("issueTrackerConf").innerHTML = $('#issueTracker').val();
-                document.getElementById("bottomModal").innerHTML = '<input type = "email" id = "email"  required="required" class = "form-control" >';
+                document.getElementById("bottomModal").innerHTML = '<input type = "email" id = "email" name="email" required="required" class = "form-control" >';
                 $('#modalLink').modal();
             } else { 
                 document.getElementById("projNameConf").innerHTML = $('#projName').val();

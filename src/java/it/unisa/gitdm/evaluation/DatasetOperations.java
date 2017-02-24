@@ -51,7 +51,6 @@ public class DatasetOperations {
             }
         }
         instances.deleteAttributeAt(instances.numAttributes() - 2);
-
         return instances;
     }
 

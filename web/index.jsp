@@ -28,7 +28,7 @@
     <div class="">
         <div class="page-title">
             <div class="title_left">
-                <h3>Titolo</h3>
+                <h3>Compute Prediction</h3>
             </div>
 
             <div class="title_right">
@@ -52,7 +52,7 @@
                 </div>
                 <div class="x_content" style="display: block;">
                     <br>
-                    <form action="BuildModelServlet" method="POST" id="demo-form2" data-parsley-validate="" class="form-horizontal form-label-left" novalidate="">
+                    <form action="BuildModelServlet" method="GET" id="demo-form2" data-parsley-validate="" class="form-horizontal form-label-left" novalidate="">
 
                         <div class="form-group">
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Project <span class="required">*</span>
@@ -141,27 +141,28 @@
                                 <select id="classifier" name="classifier" class="form-control" required="">
                                     <option value="">Choose...</option>
                                     <option value="Decision Table Majority">Decision Table Majority</option>
-                                    <option value="Logistic Regression">Logistic Regression</option>
+                                    <!--<option value="Logistic Regression">Logistic Regression</option>-->ß
                                     <option value="Multi Layer Perceptron">Multi Layer Perceptron</option>
                                     <option value="Naive Baesian">Naive Baesian</option>
                                     <option value="Random Forest">Random Forest</option>
+                                    <option value="Decision Tree">Decision Tree</option>
                                 </select>
                             </div>
                             <div class="col-md-3 col-sm-6 col-xs-12 col-md-offset-3">
                                 <button type="reset" class="btn btn-danger">Cancel</button>
                                 <button type="button" name="confirm" class="btn btn-success">Submit</button>
-                                <div id="myModal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg">
+                                <div id="myModal" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true">
+                                    <div class="modal-dialog modal-sm">
                                         <div class="modal-content">
 
                                             <div class="modal-header">
                                                 <button type="button" onclick="onModalClose()" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
                                                 </button>
-                                                <h4 class="modal-title" id="myModalLabel">Confirm your data</h4>
+                                                <h4 class="modal-title" id="myModalLabel">Are you sure?</h4>
                                             </div>
                                             <div class="modal-body">
 
-                                                <div class="row">
+<!--                                                <div class="row">
                                                     <label class="control-label col-md-3 col-sm-3 col-xs-12">Github link: </label>
                                                     <label class="control-label col-md-6 col-sm-6 col-xs-12" id="githubConf">link</label>
                                                 </div>
@@ -190,12 +191,16 @@
                                                     <label class="control-label col-md-6 col-sm-6 col-xs-12" id="classifierConf">j48</label>
                                                 </div>
                                                
-                                                <div class="ln_solid"></div>
+                                                <div class="ln_solid"></div>-->
+                                                <div class="row">
+                                                    <label class="control-label col-md-12 col-sm-12 col-xs-12">WARNING: This operation can take a while</label>
+                                                </div>
+                                                
                                             </div>
 
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-default" onclick="onModalClose()" data-dismiss="modal">Close</button>
-                                                <button type="submit"name="confirm" class="btn btn-success">Confirm</button>
+                                                <button type="submit" class="btn btn-success" >Confirm</button>
                                             </div>
                                         </div>
 
@@ -210,7 +215,9 @@
         </div>
     </div>
 
-
+                            <div id="prediction">
+                                
+                            </div>
     <!-- /CONTENT -->
 </div>
 
@@ -220,8 +227,6 @@
 <!-- footer content -->
 <jsp:include page="footer.jsp" />
 
-<!-- iCheck -->
-<script src="scripts/icheck.js"></script>
 <script src="scripts/parsleyjs/dist/parsley.js"></script>
 
 <!-- Parsley -->
@@ -236,23 +241,6 @@
         }
     }
     function createModal() {
-        document.getElementById("githubConf").innerHTML = $('#github').val(); 
-        var metrics = document.getElementById("metricsConf");
-        metrics.innerHTML = '';
-        $('input[name="metrics"]').each(function () {
-            metrics.innerHTML += (this.checked ? $(this).val() + "; " : "");
-        });
-        document.getElementById("typeProjectConf").innerHTML = $('input[name="typeProject"]:checked').val();
-        if (isCross) {
-            var projects = document.getElementById("projectsConf");
-            projects.innerHTML = '';
-            $('input[name="projects"]').each(function () {
-               projects.innerHTML += (this.checked ? $(this).val() + "; " : "");
-            });
-        } else {
-            document.getElementById("projectsConf").innerHTML = 'None';
-        }
-        document.getElementById("classifierConf").innerHTML = $('#classifier').val();
         $('#myModal').modal();
     }
 
@@ -265,13 +253,9 @@
             isCross = false;
             $('input[name="projects"]').iCheck('disable');
             $('input[name="projects"]').removeAttr('required');
-           
-//            $('#buttonAdd').attr({
-//                'disabled': 'disabled'
-//            });
             
         } else if (!isCross && aValue === 'Cross Project') {
-           $('input[name="projects"]').iCheck('enable');
+            $('input[name="projects"]').iCheck('enable');
             isCross = true;
             $('input[name="projects"]').each( function() {
                 if($('#github').val() !== ""){
@@ -288,7 +272,6 @@
             $('input[name="projects"]').attr({
                'required' : 'required' 
             });
-//            $('#buttonAdd').removeAttr('disabled');    
         }
     }
 
@@ -320,11 +303,63 @@
             $('input[name="projects"]').attr({
                'required' : 'required' 
             });
-//            $('#buttonAdd').removeAttr('disabled');    
         }
     }
-
-
+  
+  
+    $('#demo-form2').submit(function(){
+        $('#myModal').modal('hide');
+        onModalClose();
+        $.blockUI({ message: '' });
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: $(this).serialize(),
+            dataType: 'json',
+            success: function(result) {
+                loadDivPrediction(result);
+                $.unblockUI();
+            }
+        });
+        return false;
+    });
+  
+    function loadDivPrediction(data) {
+        $('#prediction').load('newPrediction.jsp', function() {
+            Morris.Bar({
+            element: 'graph',
+            data: [
+                {x: 'Accuracy', y: data[0].accuracy},
+                {x: 'Precision', y: data[0].precision},
+                {x: 'Recall', y: data[0].recall},
+                {x: 'Fmeasure', y: data[0].fmeasure},
+                {x: 'AreaUnderROC', y: data[0].areaUnderRoc}
+            ],
+            xkey: 'x',
+            ykeys: ['y'],
+            barColors: ['#26B99A', '#34495E', '#ACADAC', '#3498DB'],
+            hideHover: 'auto',
+            labels: [data[1].classifier],
+            resize: true
+        }).on('click', function (i, row) {
+            console.log(i, row);
+        });
+        var classes = data[2];
+        for(i = 0; i < classes.length; i++){
+            $('#tableBody').append("<tr><td>" + classes[i].classPath + "</td><td>" + classes[i].LOC + "</td><td>" + classes[i].CBO + "</td><td>" 
+                    + classes[i].LCOM + "</td><td>" + classes[i].NOM + "</td><td>" +classes[i].RFC + "</td><td>" + classes[i].WMC + "</td><td>" 
+                    + classes[i].numOfChanges + "</td><td>" + classes[i].numberOfFIChanges + "</td><td>" + classes[i].structuralScatteringSum + "</td><td>"
+                    + classes[i].semanticScatteringSum + "</td><td>" + classes[i].numberOfDeveloper + "</td><td>" + classes[i].isBuggy + "</td></tr>");
+        }
+        $('#datatable').dataTable({
+            'order': [[0, 'asc']],
+            'fixedColumns': true
+        });
+        $('html,body').animate({ scrollTop: $(document).height()-$(window).height() }, 'slow');        
+        });
+        
+    }
+    
     $(document).ready(function () {
         isCross = false;
         $.listen('parsley:field:validate', function () {

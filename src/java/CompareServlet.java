@@ -4,7 +4,10 @@
  * and open the template in the editor.
  */
 
+import com.google.gson.Gson;
 import it.unisa.gitdm.bean.Evaluation;
+import it.unisa.gitdm.bean.EvaluationSummary;
+import it.unisa.gitdm.bean.Metric;
 import it.unisa.gitdm.bean.Model;
 import it.unisa.gitdm.bean.Project;
 import it.unisa.primeLab.Config;
@@ -12,6 +15,8 @@ import it.unisa.primeLab.ProjectHandler;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -66,7 +71,87 @@ public class CompareServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        
+        try {
+            HttpSession session = request.getSession(true);
+            String[] modelToCompare = request.getParameterValues("table_records");
+            ArrayList<String> projectNames = new ArrayList<String>();
+            ArrayList<String> githubs = new ArrayList<String>();
+            ArrayList<String> metrics = new ArrayList<String>();
+            ArrayList<String> isCross = new ArrayList<String>();
+            ArrayList<String> projects = new ArrayList<String>();
+            ArrayList<String> classifiers = new ArrayList<String>();
+            
+            for(String s : modelToCompare){
+                String[] split = s.split("-");
+                projectNames.add(split[0]);
+                isCross.add(split[1]);
+                projects.add(split[2]);
+                githubs.add(split[3]);
+                metrics.add(split[4]);
+                classifiers.add(split[5]);
+            }
+            
+            ArrayList<EvaluationSummary> evaluations = new ArrayList<EvaluationSummary>();
+            
+            for(int i = 0; i < projectNames.size(); i++){
+                String projName = projectNames.get(i);
+                String isCrossS = isCross.get(i);
+                String githubS = githubs.get(i);
+                boolean check;
+                ArrayList<String> projectS;
+                
+                if(isCrossS.equals("true")){
+                    check = true;
+                    String stringProjects = projects.get(i);
+                    stringProjects = stringProjects.replace("[", "");
+                    stringProjects = stringProjects.replace("]","");
+                    String[] split = stringProjects.split(";");
+                    projectS = new ArrayList<String>();
+                    for(String p : split) {
+                        projectS.add(p);
+                    }
+                } else {
+                    check = false;
+                    projectS = null;
+                }
+                String stringMetrics = metrics.get(i);
+                ArrayList<Metric> metricS = new ArrayList<Metric>();
+                stringMetrics = stringMetrics.replace("[", "");
+                stringMetrics = stringMetrics.replace("]", "");
+                String[] split = stringMetrics.split(",");
+                for(String s : split){
+                    if (s.charAt(0) == ' '){
+                        s = s.replace(" ", "");
+                    }
+                    metricS.add(new Metric(s));
+                }
+                String classifierName = classifiers.get(i);
+                Model newModel = new Model("Model", projName, githubS, check, projectS, metricS, classifierName, "");
+                Model toSave = null;
+               
+                for (Project p : ProjectHandler.getAllProjects()) {
+                    if (p.getModels() != null) {
+                        for (Model m : p.getModels()) {
+                            System.out.println(newModel + " --- " + m + " --- " + newModel.equals(m));
+                            if (m.equals(newModel)) {
+                                toSave = m;
+                            }
+                        }
+                    }
+                }
+                String projFolderPath = Config.baseDir + projName;
+
+                evaluations.add(DataExtractor.getEvaluation(projFolderPath, projName, toSave).getEvaluationSummary());
+                
+            }
+            Thread.sleep(1500);
+            String json = new Gson().toJson(evaluations);
+            response.setContentType("application/json");
+            response.getWriter().write(json);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(CompareServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -80,31 +165,6 @@ public class CompareServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(true);
-        String[] modelToCompare = request.getParameterValues("table_records");
-        Project currentProject = ProjectHandler.getCurrentProject();
-        String projName = currentProject.getName();
-        String projFolderPath = Config.baseDir + "" + projName;
-        ArrayList<Model> models = currentProject.getModels();
-        System.out.println(models);
-        ArrayList<Model> toReturn = new ArrayList<Model>();
-
-        for (String modelName : modelToCompare) {
-            for (Model m : models) {
-                if (m.getName().equals(modelName)) {
-                    toReturn.add(m);
-                }
-            }
-        }
-        ArrayList<Evaluation> evaluations = new ArrayList<Evaluation>();
-        for (Model model : toReturn) {
-            System.out.println(model);
-            evaluations.add(DataExtractor.getEvaluation(projFolderPath, projName, model));
-        }
-        session.setAttribute("evaluations", evaluations);
-        ServletContext sc = getServletContext();
-        RequestDispatcher rd = sc.getRequestDispatcher("/compare.jsp");
-        rd.forward(request, response);
     }
 
     /**

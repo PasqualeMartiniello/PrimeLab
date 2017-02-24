@@ -9,6 +9,7 @@ import it.unisa.gitdm.experiments.Checkout;
 import it.unisa.gitdm.init.servlet.CalculateBuggyFiles;
 import it.unisa.gitdm.init.servlet.CalculatePredictors;
 import it.unisa.gitdm.source.Git;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -76,15 +77,22 @@ public class ProjectHandler {
     }
 
     private static void readProjects() {
-        try {
-            ObjectInputStream in = new ObjectInputStream(new FileInputStream(Config.baseDir + "projects.txt"));
-            allProjects = (ArrayList<Project>) in.readObject();
-            in.close();
-        } catch (IOException ex) {
-            Logger.getLogger(ProjectHandler.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ProjectHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
+       
+        File file = new File(Config.baseDir + "projects.txt");
+        if (file.exists()) {
+            try {
+                ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
+                allProjects = (ArrayList<Project>) in.readObject();
+                in.close();
+            } catch (IOException ex) {
+                Logger.getLogger(ProjectHandler.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(ProjectHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            allProjects = new ArrayList<Project>();
+        }   
+        
     }
 
     private static void saveProjects() {

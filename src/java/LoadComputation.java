@@ -4,38 +4,32 @@
  * and open the template in the editor.
  */
 
-import com.google.gson.*;
-import it.unisa.primeLab.Config;
+import com.google.gson.Gson;
 import it.unisa.gitdm.bean.Evaluation;
 import it.unisa.gitdm.bean.Metric;
 import it.unisa.gitdm.bean.Model;
 import it.unisa.gitdm.bean.MyClassifier;
 import it.unisa.gitdm.bean.Project;
-import it.unisa.gitdm.evaluation.WekaEvaluator;
-import it.unisa.primeLab.Manager;
+import it.unisa.primeLab.Config;
 import it.unisa.primeLab.ProjectHandler;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.lang.Double;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
- * @author fabiano
+ * @author pasqualemartiniello
  */
-@WebServlet(name = "BuildModelServlet", urlPatterns = {"/BuildModelServlet"})
-public class BuildModelServlet extends HttpServlet {
+@WebServlet(urlPatterns = {"/LoadComputation"})
+public class LoadComputation extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -54,10 +48,10 @@ public class BuildModelServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet BuildModelServlet</title>");
+            out.println("<title>Servlet LoadComputation</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet BuildModelServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet LoadComputation at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -75,67 +69,72 @@ public class BuildModelServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+            
         try {
             HttpSession session = request.getSession(true);
-            // GET REQUEST PARAMETER
+            String projName = request.getParameter("projName");
+            String isCrossS = request.getParameter("isCross");
             String github = request.getParameter("github");
-            Project curr = new Project(github);
-            ProjectHandler.setCurrentProject(curr);
-            String issueTracker = request.getParameter("issueTracker");
+            boolean isCross;
+            ArrayList<String> projects;
             
-            boolean isCross = false;
-            String[] checkedProjects = null;
-            if(request.getParameterValues("typeProject")[0].equals("Cross Project")){
+            if(isCrossS.equals("true")){
                 isCross = true;
-                checkedProjects = request.getParameterValues("projects");
-            }
-            
-            ArrayList<String> projects = null;
-            if(isCross) {
+                String stringProjects = request.getParameter("projects");
+                stringProjects = stringProjects.replace("[", "");
+                stringProjects = stringProjects.replace("]","");
+                String[] split = stringProjects.split(";");
                 projects = new ArrayList<String>();
-                for(String p : checkedProjects) {
+                for(String p : split) {
                     projects.add(p);
                 }
+            } else {
+                isCross = false;
+                projects = null;
             }
-            String[] checkedMetrics = request.getParameterValues("metrics");
+            String stringMetrics = request.getParameter("metrics");
             ArrayList<Metric> metrics = new ArrayList<Metric>();
-            for (String s : checkedMetrics) {
+            stringMetrics = stringMetrics.replace("[", "");
+            stringMetrics = stringMetrics.replace("]", "");
+            String[] split = stringMetrics.split(",");
+            for(String s : split){
+                if (s.charAt(0) == ' '){
+                    s = s.replace(" ", "");
+                }
                 metrics.add(new Metric(s));
             }
             String classifierName = request.getParameterValues("classifier")[0];
-            String dirName = github.split(".com/")[1].split(".git")[0];
-            String[] splitted = dirName.split("/");
-            String projName = splitted[splitted.length - 1];
-            String projFolderPath = Config.baseDir + projName;
-            Model model = ModelBuilder.buildModel(projName, github, isCross, projects, metrics, classifierName);
+            Model newModel = new Model("Model", projName, github, isCross, projects, metrics, classifierName, "");
+            Model toSave = null;
             
-            int modelsNum = 0;
-            File files = new File(Config.baseDir + projName + "/models/");
-            for(File f : files.listFiles()){
-                modelsNum++;
-            }
-            if(model.getName().equals("Model"+modelsNum)) {
-                if (isCross) {
-                    new WekaEvaluator(Config.baseDir, projName, classifierName, model.getName(), projects);
-                } else {
-                    new WekaEvaluator(Config.baseDir, projName, classifierName, model.getName(), null);
+            for(Project p: ProjectHandler.getAllProjects()){
+                if(p.getModels() != null) {
+                    for(Model m : p.getModels()){
+                        System.out.println(newModel+" --- "+m+" --- "+newModel.equals(m));
+                        if(m.equals(newModel)){
+                            toSave = m;
+                        }
+                    }
                 }
             }
             
-            Thread.sleep(3000);
-            Evaluation eval = DataExtractor.getEvaluation(projFolderPath, projName, model);
+            String dirName = github.split(".com/")[1].split(".git")[0];
+            String[] splitted = dirName.split("/");
+            projName = splitted[splitted.length - 1];
+            String projFolderPath = Config.baseDir + projName;
+            Thread.sleep(1500);
+            Evaluation eval = DataExtractor.getEvaluation(projFolderPath, projName, toSave);
             ArrayList<Object> toParse = new ArrayList<Object>();
-            
             toParse.add(eval.getEvaluationSummary());
-            toParse.add(model);
+            toParse.add(toSave);
             toParse.add(eval.getAnalyzedClasses());
             String json = new Gson().toJson(toParse);
             response.setContentType("application/json");
             response.getWriter().write(json);
         } catch (InterruptedException ex) {
-            Logger.getLogger(BuildModelServlet.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LoadComputation.class.getName()).log(Level.SEVERE, null, ex);
         }
+                    
     }
 
     /**
@@ -149,7 +148,7 @@ public class BuildModelServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       
+        processRequest(request, response);
     }
 
     /**

@@ -27,12 +27,9 @@
         <link href="style/custom.css" rel="stylesheet">
         <!-- iCheck -->
         <link href="style/iCheck/skins/flat/green.css" rel="stylesheet">
-        <!-- Datatables -->
-        <link href="style/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
-        <link href="style/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
-        <link href="style/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
-        <link href="style/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
-        <link href="style/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
+        <!-- Page Progress Bar -->
+        <link href="style/pace/green/pace-theme-loading-bar.css" rel="stylesheet" />
+        
     </head>
 
     <body class="nav-sm">
@@ -55,8 +52,9 @@
                         <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
                             <div class="menu_section">
                                 <ul class="nav side-menu">
-                                    <li><a href="index.jsp"><i class="fa fa-home"></i> Home </a></li>
-                                    <li><a href="ExploreDatasetServlet"><i class="fa fa-bar-chart"></i> Explore Datasets </a></li>
+                                    <li><a href="index.jsp"><i class="fa fa-home"></i> Compute Prediction </a></li>
+                                    <li><a href="ExploreOldComputation"><i class="fa fa-bar-chart-o"></i> Explore Old Computation </a></li>
+                                    <li><a href="exploreDatasets.jsp"><i class="fa fa-list-alt"></i> Explore Datasets </a></li>
                                     <li><a href="addProject.jsp"><i class="fa fa-plus-square"></i> Add new Project </a></li>
                                 </ul>
                             </div>

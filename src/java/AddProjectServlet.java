@@ -99,14 +99,16 @@ public class AddProjectServlet extends HttpServlet {
             String issueTrackerUrl = request.getParameter("issueTracker");
             toAdd = new Project(projName, github, null);
             String baseDir = Config.baseDir + projName + "/";
-            //Manager.createCsv(github, baseDir, projName, "All", dirNameScattering, issueTracker, issueTrackerUrl, projName, false, false, false);
-            
+            String email = request.getParameter("email");
+            Runnable toRun = new Manager(github, baseDir, projName, "All", dirNameScattering, issueTracker, issueTrackerUrl, projName, true, true, false, email);
+            Thread toDispatch = new Thread(toRun); 
+            toDispatch.start();
         } else {
             String projName = request.getParameter("projName");
             toAdd = new Project(projName, "", null);
+            ProjectHandler.addProject(toAdd);
         }
-      
-        //ProjectHandler.addProject(toAdd);
+        
         ServletContext sc = getServletContext();
         RequestDispatcher rd = sc.getRequestDispatcher("/index.jsp");
         rd.forward(request, response);

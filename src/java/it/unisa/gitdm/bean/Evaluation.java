@@ -18,11 +18,11 @@ public class Evaluation implements Serializable{
     private EvaluationSummary evaluationSummary;
     private ArrayList<EvaluationPredictors> analyzedClasses;
     private ArrayList<Metric> metrics;
-    private MyClassifier classifier;
+    private String classifier;
 
     public Evaluation(){}
 
-    public Evaluation(EvaluationSummary evaluationSummary, ArrayList<EvaluationPredictors> analyzedClasses, ArrayList<Metric> metrics, MyClassifier classifier) {
+    public Evaluation(EvaluationSummary evaluationSummary, ArrayList<EvaluationPredictors> analyzedClasses, ArrayList<Metric> metrics, String classifier) {
         this.evaluationSummary = evaluationSummary;
         this.analyzedClasses = analyzedClasses;
         this.metrics = metrics;
@@ -53,11 +53,11 @@ public class Evaluation implements Serializable{
         this.metrics = metrics;
     }
 
-    public MyClassifier getClassifier() {
+    public String getClassifier() {
         return classifier;
     }
 
-    public void setClassifier(MyClassifier classifier) {
+    public void setClassifier(String classifier) {
         this.classifier = classifier;
     }
     
